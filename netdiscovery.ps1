@@ -3,7 +3,8 @@ Function netconn() {
     param(
         [switch]$resolve,
         [switch]$out,
-        [switch]$getprocess
+        [switch]$getprocess,
+        [switch]$fullreport
     )
 
     function fetchprocess() {
@@ -27,13 +28,19 @@ Function netconn() {
         }
     }
 
-    if ($getprocess){
+    if ($fullreport) {
+        getconnections
         fetchprocess
+        resolver
     } else {
-        if ($resolve) {
-            resolver
+        if ($getprocess){
+            fetchprocess
         } else {
-            getconnections
+            if ($resolve) {
+                resolver
+            } else {
+                getconnections
+            }
         }
     }
 }
