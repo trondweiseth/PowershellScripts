@@ -2,8 +2,14 @@ Function netconn() {
 
     param(
         [switch]$resolve,
-        [switch]$out
+        [switch]$out,
+        [switch]$getprocess
     )
+
+    function fetchprocess() {
+        $pids = getconnections | Select-Object OwningProcess | ForEach-Object {$_.OwningProcess}
+        $pids | ForEach-Object {Get-Process -Id $_ | Select-Object Id,ProcessName} | Format-Table
+    }
     function getconnections() {
         if ($out) {
             Get-NetTCPConnection | Where-Object {$_.State -cmatch 'Established' -and $_.RemoteAddress -ne '127.0.0.1' -and $_.LocalAddress -cnotmatch '::'} | Out-GridView
@@ -20,9 +26,14 @@ Function netconn() {
             $iplist | ForEach-Object {Invoke-RestMethod -Uri http://ip-api.com/json/$_ | Select-Object query,country,countryCode,region,regionName,city,zip,timezone,isp,org,as} | Format-Table -Autosize -Wrap
         }
     }
-    if ($resolve) {
-        resolver
+
+    if ($getprocess){
+        fetchprocess
     } else {
-        getconnections
+        if ($resolve) {
+            resolver
+        } else {
+            getconnections
+        }
     }
 }
