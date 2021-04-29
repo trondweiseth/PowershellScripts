@@ -1,4 +1,4 @@
-$Action = New-ScheduledTaskAction -Execute 'pwsh.exe' -Argument 'powershell.exe -ExecutionPolicy bypass -WindowStyle Hidden "C:\StartupTask.ps1"'
+$Action = New-ScheduledTaskAction -Execute 'pwsh.exe' -Argument 'powershell.exe -ExecutionPolicy bypass -WindowStyle Hidden "C:\StartMyProgram.ps1"'
 $Trigger = New-ScheduledTaskTrigger -Daily -at 07:30
 $Settings = New-ScheduledTaskSettingsSet
 $Task = New-ScheduledTask -Action $Action -Trigger $Trigger -Settings $Settings
