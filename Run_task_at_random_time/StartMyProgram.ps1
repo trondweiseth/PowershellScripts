@@ -3,7 +3,10 @@ while ($true)
     # Getting current time
     $CurrentTime = get-date -Format '%h%m'
 
-    # Selecting a random time between 07:30 and 07:45
+    <#
+    Selecting a random time between 07:30 and 07:45.
+    !!! Do not set the '-Minimum' time before the task is set to run.
+    #>
     $StartTime = Get-Random -Minimum 730 -Maximum 745
 
     #Waiting until the clock is matching the random time set.
