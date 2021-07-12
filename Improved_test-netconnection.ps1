@@ -52,6 +52,7 @@ Function Port-Test {
     
                     else {
                         $res = "False"
+                        portinfotable
                     }
     
                 }
