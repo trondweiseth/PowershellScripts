@@ -42,7 +42,7 @@ Function Port-Test {
                     "InterfaceAlias   : $netinterface"
                     "SourceAddress    : $srcip"
                     "RemotePort       : $port"
-                    “TcpTestSucceeded : True” 
+                    "TcpTestSucceeded : True" 
     
                     $socket.Close() 
                 }
@@ -54,7 +54,7 @@ Function Port-Test {
                     "InterfaceAlias   : $netinterface"
                     "SourceAddress    : $srcip"
                     "RemotePort       : $port"
-                    “TcpTestSucceeded : False” 
+                    "TcpTestSucceeded : False" 
                 }
     
             }
@@ -95,7 +95,7 @@ Function Port-Test {
                 "InterfaceAlias   : $netinterface"
                 "SourceAddress    : $srcip"
                 "RemotePort       : $port"
-                “TcpTestSucceeded : True” 
+                "TcpTestSucceeded : True"
 
                 $socket.Close() 
             }
@@ -107,7 +107,7 @@ Function Port-Test {
                 "InterfaceAlias   : $netinterface"
                 "SourceAddress    : $srcip"
                 "RemotePort       : $port"
-                “TcpTestSucceeded : False” 
+                "TcpTestSucceeded : False"
             }
 
         }
