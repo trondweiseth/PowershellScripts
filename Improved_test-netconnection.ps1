@@ -85,7 +85,7 @@ Function Port-Test {
                 "RemoteAddress    : $RA"
                 "InterfaceAlias   : $netinterface"
                 "SourceAddress    : $srcip"
-                "RemotePort       : $port"
+                "RemotePort       : $_"
                 “TcpTestSucceeded : $res”
                 "===================================="
             }
