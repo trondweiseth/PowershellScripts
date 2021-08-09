@@ -1,4 +1,4 @@
-Function Port-Test {
+Function Net-Test {
 
     [CmdletBinding()]
     param(
@@ -9,7 +9,7 @@ Function Port-Test {
     )
 
     function help() {
-        write-host "SYNTAX: Port-Test [-ip] <hostname/ipaddr> [-port <portnumber>] [-remote <hostname of the remote host to run the script from>]" -ForegroundColor Yellow
+        write-host "SYNTAX: Net-Test [-ip] <hostname/ipaddr> [-port <portnumber>] [-remote <hostname of the remote host to run the script from>]" -ForegroundColor Yellow
     }
 
     if ($help -or !$ip) { help } else {
@@ -22,19 +22,19 @@ Function Port-Test {
 
                 $rhost = Resolve-DnsName $ip | Select-Object -ExpandProperty Name
                 $ErrorActionPreference = "SilentlyContinue"
-                $netinterface = Get-NetIPInterface | Where-Object { $_.ConnectionState -eq "Connected" } | Select-Object -ExpandProperty InterfaceAlias -First 1
+                $netinterface = Get-NetIPInterface | Where-Object { $_.ConnectionState -eq "Connected" -and $_.AddressFamily -eq "IPv4" } | Select-Object -ExpandProperty InterfaceAlias -First 1
                 $srcip = Get-NetIPAddress -InterfaceAlias $netinterface -AddressFamily IPv4 | Select-Object -ExpandProperty IPAddress
                 $RA = Resolve-DnsName $ip | ForEach-Object { $_.IPAddress }
   
                 function portinfotable() {
-                    "===================================="
-                    "CumputerName     : $rhost"
-                    "RemoteAddress    : $RA"
-                    "InterfaceAlias   : $netinterface"
-                    "SourceAddress    : $srcip"
-                    "RemotePort       : $port"
-                    “TcpTestSucceeded : $res”
-                    "===================================="
+                    Write-Host -ForegroundColor Cyan "===================================="
+                    Write-Host -NoNewline -ForegroundColor Green "CumputerName     : "; Write-Host -ForegroundColor Yellow "$rhost"
+                    Write-Host -NoNewline -ForegroundColor Green "RemoteAddress    : "; Write-Host -ForegroundColor Yellow "$RA"
+                    Write-Host -NoNewline -ForegroundColor Green "InterfaceAlias   : "; Write-Host -ForegroundColor Yellow "$netinterface"
+                    Write-Host -NoNewline -ForegroundColor Green "SourceAddress    : "; Write-Host -ForegroundColor Yellow "$srcip"
+                    Write-Host -NoNewline -ForegroundColor Green "RemotePort       : "; Write-Host -ForegroundColor Yellow "$port"
+                    Write-Host -NoNewline -ForegroundColor Green "TcpTestSucceeded : "; Write-Host -ForegroundColor Yellow "$res"
+                    Write-Host -ForegroundColor Cyan "===================================="
                 }
 
                 if ($port) {
@@ -59,35 +59,35 @@ Function Port-Test {
                     else {
                         $ping = "False"
                     }
-
-                    "===================================="
-                    "ComputerName           : $rhost"
-                    "RemoteAddress          : $RA"
-                    "InterfaceAlias         : $netinterface"
-                    "SourceAddress          : $srcip"
-                    "PingSucceeded          : $ping"
-                    "PingReplyDetails (RTT) : $responsetime"
-                    "===================================="
+                    Write-Host -ForegroundColor Cyan "===================================="
+                    Write-Host -NoNewline -ForegroundColor Green "CumputerName           : "; Write-Host -ForegroundColor Yellow "$rhost"
+                    Write-Host -NoNewline -ForegroundColor Green "RemoteAddress          : "; Write-Host -ForegroundColor Yellow "$RA"
+                    Write-Host -NoNewline -ForegroundColor Green "InterfaceAlias         : "; Write-Host -ForegroundColor Yellow "$netinterface"
+                    Write-Host -NoNewline -ForegroundColor Green "SourceAddress          : "; Write-Host -ForegroundColor Yellow "$srcip"
+                    Write-Host -NoNewline -ForegroundColor Green "PingSucceeded          : "; Write-Host -ForegroundColor Yellow "$ping"
+                    Write-Host -NoNewline -ForegroundColor Green "PingReplyDetails (RTT) : "; Write-Host -ForegroundColor Yellow "$responsetime"
+                    Write-Host -ForegroundColor Cyan "===================================="
                 }
             }
 
         }
         else {
             $rhost = Resolve-DnsName $ip | Select-Object -ExpandProperty Name
-            $netinterface = Get-NetIPInterface | Where-Object { $_.ConnectionState -eq "Connected" } | Select-Object -ExpandProperty InterfaceAlias -First 1
+            $netinterface = Get-NetIPInterface | Where-Object { $_.ConnectionState -eq "Connected" -and $_.AddressFamily -eq "IPv4" } | Select-Object -ExpandProperty InterfaceAlias -First 1
             $srcip = Get-NetIPAddress -InterfaceAlias $netinterface -AddressFamily IPv4 | Select-Object -ExpandProperty IPAddress
             $ErrorActionPreference = "SilentlyContinue"
             $RA = $(Resolve-DnsName $ip | ForEach-Object { $_.IPAddress })
 
             function portinfotable() {
-                "===================================="
-                "CumputerName     : $rhost"
-                "RemoteAddress    : $RA"
-                "InterfaceAlias   : $netinterface"
-                "SourceAddress    : $srcip"
-                "RemotePort       : $_"
-                “TcpTestSucceeded : $res”
-                "===================================="
+                
+                Write-Host -ForegroundColor Cyan "===================================="
+                Write-Host -NoNewline -ForegroundColor Green "CumputerName     : "; Write-Host -ForegroundColor Yellow "$rhost"
+                Write-Host -NoNewline -ForegroundColor Green "RemoteAddress    : "; Write-Host -ForegroundColor Yellow "$RA"
+                Write-Host -NoNewline -ForegroundColor Green "RemotePort       : "; Write-Host -ForegroundColor Yellow "$port"
+                Write-Host -NoNewline -ForegroundColor Green "InterfaceAlias   : "; Write-Host -ForegroundColor Yellow "$netinterface"
+                Write-Host -NoNewline -ForegroundColor Green "SourceAddress    : "; Write-Host -ForegroundColor Yellow "$srcip"
+                Write-Host -NoNewline -ForegroundColor Green "TcpTestSucceeded : "; Write-Host -ForegroundColor Yellow "$res"
+                Write-Host -ForegroundColor Cyan "===================================="
             }
 
             if ($port) {
@@ -114,15 +114,14 @@ Function Port-Test {
                 else {
                     $ping = "False"
                 }
-
-                "===================================="
-                "ComputerName           : $rhost"
-                "RemoteAddress          : $RA"
-                "InterfaceAlias         : $netinterface"
-                "SourceAddress          : $srcip"
-                "PingSucceeded          : $ping"
-                "PingReplyDetails (RTT) : $responsetime"
-                "===================================="
+                Write-Host -ForegroundColor Cyan "===================================="
+                Write-Host -NoNewline -ForegroundColor Green "CumputerName           : "; Write-Host -ForegroundColor Yellow "$rhost"
+                Write-Host -NoNewline -ForegroundColor Green "RemoteAddress          : "; Write-Host -ForegroundColor Yellow "$RA"
+                Write-Host -NoNewline -ForegroundColor Green "InterfaceAlias         : "; Write-Host -ForegroundColor Yellow "$netinterface"
+                Write-Host -NoNewline -ForegroundColor Green "SourceAddress          : "; Write-Host -ForegroundColor Yellow "$srcip"
+                Write-Host -NoNewline -ForegroundColor Green "PingSucceeded          : "; Write-Host -ForegroundColor Yellow "$ping"
+                Write-Host -NoNewline -ForegroundColor Green "PingReplyDetails (RTT) : "; Write-Host -ForegroundColor Yellow "$responsetime"
+                Write-Host -ForegroundColor Cyan "===================================="
             }
         }
     }
