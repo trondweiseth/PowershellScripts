@@ -2,7 +2,7 @@ Function Net-Test {
 
     [CmdletBinding()]
     param(
-        [Parameter(Position = 0, Mandatory = $false)][string]$ip,
+        [Parameter(Position = 0, Mandatory = $false)][string]$rhost,
         [int[]]$port,
         [string]$remote,
         [switch]$help
@@ -12,23 +12,23 @@ Function Net-Test {
         write-host "SYNTAX: Net-Test [-ip] <hostname/ipaddr> [-port <portnumber>] [-remote <hostname of the remote host to run the script from>]" -ForegroundColor Yellow
     }
 
-    if ($help -or !$ip) { help } else {
+    if ($help -or !$rhost) { help } else {
 
         if ($remote) {
 
-            Invoke-Command -ComputerName $remote -Credential $cred -ArgumentList $ip, $port -ScriptBlock {
+            Invoke-Command -ComputerName $remote -Credential $cred -ArgumentList $rhost, $port -ScriptBlock {
 
-                param([string]$ip, [string]$port)
+                param([string]$rhost, [string]$port)
 
-                $rhost = Resolve-DnsName $ip | Select-Object -ExpandProperty Name
+                $ComputerName = Resolve-DnsName $rhost | Select-Object -ExpandProperty Name
                 $ErrorActionPreference = "SilentlyContinue"
                 $netinterface = Get-NetIPInterface | Where-Object { $_.ConnectionState -eq "Connected" -and $_.AddressFamily -eq "IPv4" } | Select-Object -ExpandProperty InterfaceAlias -First 1
                 $srcip = Get-NetIPAddress -InterfaceAlias $netinterface -AddressFamily IPv4 | Select-Object -ExpandProperty IPAddress
-                $RA = Resolve-DnsName $ip | ForEach-Object { $_.IPAddress }
+                $RA = Resolve-DnsName $rhost | ForEach-Object { $_.IPAddress }
   
                 function portinfotable() {
                     Write-Host -ForegroundColor Cyan "===================================="
-                    Write-Host -NoNewline -ForegroundColor Green "CumputerName     : "; Write-Host -ForegroundColor Yellow "$rhost"
+                    Write-Host -NoNewline -ForegroundColor Green "CumputerName     : "; Write-Host -ForegroundColor Yellow "$ComputerName"
                     Write-Host -NoNewline -ForegroundColor Green "RemoteAddress    : "; Write-Host -ForegroundColor Yellow "$RA"
                     Write-Host -NoNewline -ForegroundColor Green "InterfaceAlias   : "; Write-Host -ForegroundColor Yellow "$netinterface"
                     Write-Host -NoNewline -ForegroundColor Green "SourceAddress    : "; Write-Host -ForegroundColor Yellow "$srcip"
@@ -38,7 +38,7 @@ Function Net-Test {
                 }
 
                 if ($port) {
-                    $socket = new-object System.Net.Sockets.TcpClient($ip, $port)
+                    $socket = new-object System.Net.Sockets.TcpClient($rhost, $port)
                     If ($socket.Connected) {
                         $res = "True"
                         portinfotable
@@ -53,14 +53,14 @@ Function Net-Test {
                 }
                 else {
     
-                    if ($responsetime = Test-Connection $ip -Count 1 -ErrorAction SilentlyContinue  | Select-Object -ExpandProperty ResponseTime) {
+                    if ($responsetime = Test-Connection $rhost -Count 1 -ErrorAction SilentlyContinue  | Select-Object -ExpandProperty ResponseTime) {
                         $ping = "True"
                     }
                     else {
                         $ping = "False"
                     }
                     Write-Host -ForegroundColor Cyan "===================================="
-                    Write-Host -NoNewline -ForegroundColor Green "CumputerName           : "; Write-Host -ForegroundColor Yellow "$rhost"
+                    Write-Host -NoNewline -ForegroundColor Green "CumputerName           : "; Write-Host -ForegroundColor Yellow "$ComputerName"
                     Write-Host -NoNewline -ForegroundColor Green "RemoteAddress          : "; Write-Host -ForegroundColor Yellow "$RA"
                     Write-Host -NoNewline -ForegroundColor Green "InterfaceAlias         : "; Write-Host -ForegroundColor Yellow "$netinterface"
                     Write-Host -NoNewline -ForegroundColor Green "SourceAddress          : "; Write-Host -ForegroundColor Yellow "$srcip"
@@ -72,16 +72,16 @@ Function Net-Test {
 
         }
         else {
-            $rhost = Resolve-DnsName $ip | Select-Object -ExpandProperty Name
+            $ComputerName = Resolve-DnsName $rhost | Select-Object -ExpandProperty Name
             $netinterface = Get-NetIPInterface | Where-Object { $_.ConnectionState -eq "Connected" -and $_.AddressFamily -eq "IPv4" } | Select-Object -ExpandProperty InterfaceAlias -First 1
             $srcip = Get-NetIPAddress -InterfaceAlias $netinterface -AddressFamily IPv4 | Select-Object -ExpandProperty IPAddress
             $ErrorActionPreference = "SilentlyContinue"
-            $RA = $(Resolve-DnsName $ip | ForEach-Object { $_.IPAddress })
+            $RA = $(Resolve-DnsName $rhost | ForEach-Object { $_.IPAddress })
 
             function portinfotable() {
                 
                 Write-Host -ForegroundColor Cyan "===================================="
-                Write-Host -NoNewline -ForegroundColor Green "CumputerName     : "; Write-Host -ForegroundColor Yellow "$rhost"
+                Write-Host -NoNewline -ForegroundColor Green "CumputerName     : "; Write-Host -ForegroundColor Yellow "$ComputerName"
                 Write-Host -NoNewline -ForegroundColor Green "RemoteAddress    : "; Write-Host -ForegroundColor Yellow "$RA"
                 Write-Host -NoNewline -ForegroundColor Green "RemotePort       : "; Write-Host -ForegroundColor Yellow "$port"
                 Write-Host -NoNewline -ForegroundColor Green "InterfaceAlias   : "; Write-Host -ForegroundColor Yellow "$netinterface"
@@ -92,7 +92,7 @@ Function Net-Test {
 
             if ($port) {
                 $port | ForEach-Object {
-                    $socket = new-object System.Net.Sockets.TcpClient($ip, $_) 
+                    $socket = new-object System.Net.Sockets.TcpClient($rhost, $_) 
                     If ($socket.Connected) {
                         $res = "True"
                         portinfotable
@@ -108,14 +108,14 @@ Function Net-Test {
             }
             else {
 
-                if ($responsetime = Test-Connection $ip -Count 1 -ErrorAction SilentlyContinue  | Select-Object -ExpandProperty ResponseTime) {
+                if ($responsetime = Test-Connection $rhost -Count 1 -ErrorAction SilentlyContinue  | Select-Object -ExpandProperty ResponseTime) {
                     $ping = "True"
                 }
                 else {
                     $ping = "False"
                 }
                 Write-Host -ForegroundColor Cyan "===================================="
-                Write-Host -NoNewline -ForegroundColor Green "CumputerName           : "; Write-Host -ForegroundColor Yellow "$rhost"
+                Write-Host -NoNewline -ForegroundColor Green "CumputerName           : "; Write-Host -ForegroundColor Yellow "$ComputerName"
                 Write-Host -NoNewline -ForegroundColor Green "RemoteAddress          : "; Write-Host -ForegroundColor Yellow "$RA"
                 Write-Host -NoNewline -ForegroundColor Green "InterfaceAlias         : "; Write-Host -ForegroundColor Yellow "$netinterface"
                 Write-Host -NoNewline -ForegroundColor Green "SourceAddress          : "; Write-Host -ForegroundColor Yellow "$srcip"
