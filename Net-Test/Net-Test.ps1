@@ -12,11 +12,6 @@ Function Net-Test {
         write-host "SYNTAX: Net-Test [-ip] <hostname/ipaddr> [-port <portnumber>] [-remote <hostname of the remote host to run the script from>]" -ForegroundColor Yellow
     }
 
-    if ($rhost -imatch "sgf") {
-        $uname = ("sgf\bf-$env:USERNAME")
-        $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $uname, $cred.Password
-    }
-
     if ($help -or !$rhost) { help } else {
 
         if ($remote) {
