@@ -12,6 +12,11 @@ Function Net-Test {
         write-host "SYNTAX: Net-Test [-ip] <hostname/ipaddr> [-port <portnumber>] [-remote <hostname of the remote host to run the script from>]" -ForegroundColor Yellow
     }
 
+    if ($rhost -imatch "sgf") {
+        $uname = ("sgf\bf-$env:USERNAME")
+        $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $uname, $cred.Password
+    }
+
     if ($help -or !$rhost) { help } else {
 
         if ($remote) {
@@ -28,16 +33,24 @@ Function Net-Test {
   
                 function portinfotable() {
                     Write-Host -ForegroundColor Cyan "===================================="
-                    Write-Host -NoNewline -ForegroundColor Green "CumputerName     : "; Write-Host -ForegroundColor Yellow "$ComputerName"
-                    Write-Host -NoNewline -ForegroundColor Green "RemoteAddress    : "; Write-Host -ForegroundColor Yellow "$RA"
-                    Write-Host -NoNewline -ForegroundColor Green "InterfaceAlias   : "; Write-Host -ForegroundColor Yellow "$netinterface"
-                    Write-Host -NoNewline -ForegroundColor Green "SourceAddress    : "; Write-Host -ForegroundColor Yellow "$srcip"
-                    Write-Host -NoNewline -ForegroundColor Green "RemotePort       : "; Write-Host -ForegroundColor Yellow "$port"
-                    Write-Host -NoNewline -ForegroundColor Green "TcpTestSucceeded : "; Write-Host -ForegroundColor Yellow "$res"
+                    Write-Host -NoNewline -ForegroundColor Green "CumputerName           : "; Write-Host -ForegroundColor Yellow "$ComputerName"
+                    Write-Host -NoNewline -ForegroundColor Green "RemoteAddress          : "; Write-Host -ForegroundColor Yellow "$RA"
+                    Write-Host -NoNewline -ForegroundColor Green "RemotePort             : "; Write-Host -ForegroundColor Yellow "$port"
+                    Write-Host -NoNewline -ForegroundColor Green "InterfaceAlias         : "; Write-Host -ForegroundColor Yellow "$netinterface"
+                    Write-Host -NoNewline -ForegroundColor Green "SourceAddress          : "; Write-Host -ForegroundColor Yellow "$srcip"
+                    Write-Host -NoNewline -ForegroundColor Green "PingSucceeded          : "; Write-Host -ForegroundColor Yellow "$ping"
+                    Write-Host -NoNewline -ForegroundColor Green "PingReplyDetails (RTT) : "; Write-Host -ForegroundColor Yellow "$responsetime ms"
+                    Write-Host -NoNewline -ForegroundColor Green "TcpTestSucceeded       : "; Write-Host -ForegroundColor Yellow "$res"
                     Write-Host -ForegroundColor Cyan "===================================="
                 }
 
                 if ($port) {
+                    if ($responsetime = Test-Connection $rhost -Count 1 -ErrorAction SilentlyContinue  | Select-Object -ExpandProperty ResponseTime) {
+                        $ping = "True"
+                    }
+                    else {
+                        $ping = "False"
+                    }
                     $socket = new-object System.Net.Sockets.TcpClient($rhost, $port)
                     If ($socket.Connected) {
                         $res = "True"
@@ -65,7 +78,7 @@ Function Net-Test {
                     Write-Host -NoNewline -ForegroundColor Green "InterfaceAlias         : "; Write-Host -ForegroundColor Yellow "$netinterface"
                     Write-Host -NoNewline -ForegroundColor Green "SourceAddress          : "; Write-Host -ForegroundColor Yellow "$srcip"
                     Write-Host -NoNewline -ForegroundColor Green "PingSucceeded          : "; Write-Host -ForegroundColor Yellow "$ping"
-                    Write-Host -NoNewline -ForegroundColor Green "PingReplyDetails (RTT) : "; Write-Host -ForegroundColor Yellow "$responsetime"
+                    Write-Host -NoNewline -ForegroundColor Green "PingReplyDetails (RTT) : "; Write-Host -ForegroundColor Yellow "$responsetime ms"
                     Write-Host -ForegroundColor Cyan "===================================="
                 }
             }
@@ -81,16 +94,24 @@ Function Net-Test {
             function portinfotable() {
                 
                 Write-Host -ForegroundColor Cyan "===================================="
-                Write-Host -NoNewline -ForegroundColor Green "CumputerName     : "; Write-Host -ForegroundColor Yellow "$ComputerName"
-                Write-Host -NoNewline -ForegroundColor Green "RemoteAddress    : "; Write-Host -ForegroundColor Yellow "$RA"
-                Write-Host -NoNewline -ForegroundColor Green "RemotePort       : "; Write-Host -ForegroundColor Yellow "$port"
-                Write-Host -NoNewline -ForegroundColor Green "InterfaceAlias   : "; Write-Host -ForegroundColor Yellow "$netinterface"
-                Write-Host -NoNewline -ForegroundColor Green "SourceAddress    : "; Write-Host -ForegroundColor Yellow "$srcip"
-                Write-Host -NoNewline -ForegroundColor Green "TcpTestSucceeded : "; Write-Host -ForegroundColor Yellow "$res"
+                Write-Host -NoNewline -ForegroundColor Green "CumputerName           : "; Write-Host -ForegroundColor Yellow "$ComputerName"
+                Write-Host -NoNewline -ForegroundColor Green "RemoteAddress          : "; Write-Host -ForegroundColor Yellow "$RA"
+                Write-Host -NoNewline -ForegroundColor Green "RemotePort             : "; Write-Host -ForegroundColor Yellow "$port"
+                Write-Host -NoNewline -ForegroundColor Green "InterfaceAlias         : "; Write-Host -ForegroundColor Yellow "$netinterface"
+                Write-Host -NoNewline -ForegroundColor Green "SourceAddress          : "; Write-Host -ForegroundColor Yellow "$srcip"
+                Write-Host -NoNewline -ForegroundColor Green "PingSucceeded          : "; Write-Host -ForegroundColor Yellow "$ping"
+                Write-Host -NoNewline -ForegroundColor Green "PingReplyDetails (RTT) : "; Write-Host -ForegroundColor Yellow "$responsetime ms"
+                Write-Host -NoNewline -ForegroundColor Green "TcpTestSucceeded       : "; Write-Host -ForegroundColor Yellow "$res"
                 Write-Host -ForegroundColor Cyan "===================================="
             }
 
             if ($port) {
+                if ($responsetime = Test-Connection $rhost -Count 1 -ErrorAction SilentlyContinue  | Select-Object -ExpandProperty ResponseTime) {
+                    $ping = "True"
+                }
+                else {
+                    $ping = "False"
+                }
                 $port | ForEach-Object {
                     $socket = new-object System.Net.Sockets.TcpClient($rhost, $_) 
                     If ($socket.Connected) {
@@ -120,7 +141,7 @@ Function Net-Test {
                 Write-Host -NoNewline -ForegroundColor Green "InterfaceAlias         : "; Write-Host -ForegroundColor Yellow "$netinterface"
                 Write-Host -NoNewline -ForegroundColor Green "SourceAddress          : "; Write-Host -ForegroundColor Yellow "$srcip"
                 Write-Host -NoNewline -ForegroundColor Green "PingSucceeded          : "; Write-Host -ForegroundColor Yellow "$ping"
-                Write-Host -NoNewline -ForegroundColor Green "PingReplyDetails (RTT) : "; Write-Host -ForegroundColor Yellow "$responsetime"
+                Write-Host -NoNewline -ForegroundColor Green "PingReplyDetails (RTT) : "; Write-Host -ForegroundColor Yellow "$responsetime ms"
                 Write-Host -ForegroundColor Cyan "===================================="
             }
         }
