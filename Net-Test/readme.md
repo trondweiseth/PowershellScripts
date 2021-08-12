@@ -1,4 +1,4 @@
-# Improved version of the built in Test-NetConnection function
+# Improved version of the built in Test-NetConnection
 
 The port test is using basic socket to see if the repote port is open.
 And instead of using the slower Test-Netconnection ping, this script uses the faster Test-Connection to see if the rhost responds to icmp.
