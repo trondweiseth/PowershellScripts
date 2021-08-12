@@ -73,10 +73,8 @@ Function Net-Test {
                     Else {
                         $error.clear()
                         $tcpobject.EndConnect($connect) | out-Null
-                        Else {
-                            $res = "True"
-                            portinfotable
-                        }
+                        $res = "True"
+                        portinfotable
                     }
                 }
                 else {
@@ -150,10 +148,8 @@ Function Net-Test {
                 Else {
                     $error.clear()
                     $tcpobject.EndConnect($connect) | out-Null
-                    Else {
-                        $res = "True"
-                        portinfotable
-                    }
+                    $res = "True"
+                    portinfotable
                 }
             }
             else {
