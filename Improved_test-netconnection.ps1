@@ -60,6 +60,7 @@ Function Net-Test {
     
                     else {
                         $res = "False"
+                        Write-Host -ForegroundColor Yellow -BackgroundColor Black "WARNING: TCP connect to ${rhost}:$port failed`n"
                         portinfotable
                     }
     
@@ -121,6 +122,7 @@ Function Net-Test {
                     }
 
                     else {
+                        Write-Host -ForegroundColor Yellow -BackgroundColor Black "WARNING: TCP connect to ${rhost}:$port failed`n"
                         $res = "False"
                         portinfotable
                     }
