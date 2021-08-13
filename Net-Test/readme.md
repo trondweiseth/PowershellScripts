@@ -12,6 +12,7 @@ SYNTAX
 
 -Remote - Runs the test from a remote host towards rhost.
 I.e. If you want to test the port connectivity back from the target host, you can use the -remote parameter.
+
 Example: 
 
     DC01 -> DC02 -> DC01: Net-Test -rhost DC01 -port 3389 -remote DC02
