@@ -8,7 +8,7 @@ Some older powershell versions don't have the newer Test-Netconnection to test f
 
 SYNTAX
 
-    Net-Test [[-rhost] <string>] [-port <int[]>] [-remote <string>] [-help]  [<CommonParameters>]
+    Net-Test [[-rhost] <string>] [-port <string>] [-remote <string>] [-timeout <string>] [-help] [<CommonParameters>]
 
 -Remote - Runs the test from a remote host towards rhost.
 Ie. If you want to test the port connectivity back from the target host, ypu can use the -remote parameter
