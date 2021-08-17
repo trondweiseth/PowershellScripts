@@ -1,4 +1,4 @@
-Function Install-CleanUp() {
+Function Uninstall-CleanUp() {
     param(
         [Parameter(Position = 0, Mandatory = $true)][string]$softwarename
     )
