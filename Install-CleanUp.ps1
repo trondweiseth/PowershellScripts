@@ -22,7 +22,7 @@ Function Install-CleanUp() {
     else { Write-Host -ForegroundColor Red "No matching registry keys." }
 
     foreach ($folderpath in $folderpaths) {
-        $softwarepath = Get-ChildItem -Path $folderpath | Where-Object-Object { $_.Name -imatch "$softwarename" } | Select-Object -ExpandProperty FullName
+        $softwarepath = Get-ChildItem -Path $folderpath | Where-Object { $_.Name -imatch "$softwarename" } | Select-Object -ExpandProperty FullName
         if ($softwarepath) {
             Write-Host -ForegroundColor Green -BackgroundColor Black "Found folder: $softwarepath"
             Write-Host -ForegroundColor Yellow -BackgroundColor Black -NoNewline "Remove folder? (Y\N):"
