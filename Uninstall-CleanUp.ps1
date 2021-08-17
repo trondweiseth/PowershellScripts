@@ -1,6 +1,7 @@
-Function Uninstall-CleanUp() {
+Function uninstall-CleanUp() {
     param(
-        [Parameter(Position = 0, Mandatory = $true)][string]$softwarename
+        [Parameter(Position = 0, Mandatory = $true)][string]$softwarename,
+        [switch]$RegistryBackup
     )
 
     $registrypaths = @(
@@ -17,15 +18,24 @@ Function Uninstall-CleanUp() {
         'E:\Program Files (x86)'
     )
 
+    $date = get-date -Format dd.MM.yyyy
+
     foreach ($registrypath in $registrypaths) {
-        if ($registrykey = Get-ChildItem registry::$registrypath | Where-Object { $_.Name -imatch $softwarename } | Select-Object -ExpandProperty PSPath) {
+        if ($registrykey = Get-ChildItem registry::$registrypath | Where-Object { $_.Name -imatch "$softwarename" } | Select-Object -ExpandProperty Name) {
             if ($registrykey) {
                 Write-Host -ForegroundColor Green -BackgroundColor Black "Registry key: $registrykey"
                 Write-Host -ForegroundColor Yellow -BackgroundColor Black -NoNewline "Remove registry key? (Y\N):"
                 $answer = Read-Host
                 if ($answer -eq "y") {
-                    Remove-Item $registrykey
-                    Write-Host -ForegroundColor Red "Registry key removed: $registrykey`n"
+                    if ($RegistryBackup) {
+                        [void](New-Item -Path C:\ -ItemType Directory -Name "RegistryBackup_$date")
+                        $backupfolder = "C:\RegistryBackup_$date"
+                        $regbackup = $registrykey.Replace('\','_')
+                        [void](reg export $registrykey $backupfolder\$regbackup.reg)
+                        Write-Host -ForegroundColor Green "Backup of registry key: $backupfolder\$regbackup.reg"
+                    }
+                Remove-Item Registry::$registrykey
+                Write-Host -ForegroundColor Red "Registry key removed: $registrykey`n"
                 }
             }
         }
@@ -47,7 +57,7 @@ Function Uninstall-CleanUp() {
     if (!$softwarepath) {
         Write-Host -ForegroundColor Red "No matching folders."
     }
-    elseif (!registrykey) {
+    elseif (!$registrykey) {
         Write-Host -ForegroundColor Red "No matching registry key."
     }
 }
