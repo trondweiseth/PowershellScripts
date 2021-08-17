@@ -18,7 +18,7 @@ param(
             Remove-Item $registrykey
             Write-Host -ForegroundColor Green "Registry key removed: $registrykey`n"
         }
-    }
+    } else {Write-Host -ForegroundColor Red "No matching registry keys."}
 
     foreach ($folderpath in $folderpaths) {
         $softwarepath = Get-ChildItem -Path $folderpath | where {$_.Name -imatch "$softwarename"} | select -ExpandProperty FullName
@@ -32,4 +32,7 @@ param(
             }
         }
     }
+	if (!$softwarepath) {
+		Write-Host -ForegroundColor Red "No matching folders."
+	}
 }
