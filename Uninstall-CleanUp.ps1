@@ -58,7 +58,7 @@ Function Uninstall-CleanUp() {
                     Write-Host -NoNewline -ForegroundColor Green "Backup of registry key: " ; write-host -ForegroundColor Cyan "$backupfolder\$regbackup.reg"
                 }
             }
-            Write-Host -ForegroundColor Yellow -BackgroundColor Black "Registry key(s):"
+            Write-Host -ForegroundColor Yellow -BackgroundColor Black "Selected registry key(s):"
             $regselection | ForEach-Object { write-host -ForegroundColor Cyan $_ }
             Write-Host -ForegroundColor Red -BackgroundColor Black -NoNewline "Remove registry key? (Y\N):"
             $answer = Read-Host
@@ -69,7 +69,7 @@ Function Uninstall-CleanUp() {
                 }
             }
         }
-        else { Write-Host -ForegroundColor Red "No registry key(s)." }
+        else { Write-Host -ForegroundColor Red "No registry key(s) selected." }
     }
 
     foreach ($folderpath in $folderpaths) {
@@ -83,9 +83,9 @@ Function Uninstall-CleanUp() {
     if ($folderlist) {
         $folderselection = $folderlist | Out-GridView -PassThru -Title "Folder(s)"
         if ($folderselection) {
-            Write-Host -ForegroundColor Yellow -BackgroundColor Black "Found folder(s): "
+            Write-Host -ForegroundColor Yellow -BackgroundColor Black "Selected folder(s): "
             $folderselection | ForEach-Object { write-host -ForegroundColor Cyan $_ }
-            Write-Host -ForegroundColor Red -BackgroundColor Black -NoNewline "Remove folder? (Y\N):"
+            Write-Host -ForegroundColor Red -BackgroundColor Black -NoNewline "Remove folder(s)? (Y\N):"
             $answer = Read-Host
             if ($answer -eq "y") {
                 $folderselection | ForEach-Object {
@@ -94,6 +94,6 @@ Function Uninstall-CleanUp() {
                 }
             }
         }
-        else { Write-Host -ForegroundColor Red "No folder(s)." }
+        else { Write-Host -ForegroundColor Red "No folder(s) selected." }
     }
 }
