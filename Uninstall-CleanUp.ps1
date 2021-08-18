@@ -5,20 +5,20 @@ Function Uninstall-CleanUp() {
     )
 
     $registrypaths = @(
-        'HKEY_CURRENT_USER\SOFTWARE\'
-		'HKEY_CURRENT_USER\SOFTWARE\Classes\'
-        'HKEY_LOCAL_MACHINE\SOFTWARE\'
-        'HKEY_USERS\.DEFAULT\Software\'
-        'HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\'
+        "HKEY_CURRENT_USER\SOFTWARE\"
+        "HKEY_CURRENT_USER\SOFTWARE\Classes\"
+        "HKEY_LOCAL_MACHINE\SOFTWARE\"
+        "HKEY_USERS\.DEFAULT\Software\"
+        "HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\"
     )
 
     $folderpaths = @(
-        'C:\Program Files\'
-        'C:\Program Files (x86)\'
-        'E:\Program Files\'
-        'E:\Program Files (x86)'
-		'C:\Users\tweiseth\AppData\Roaming'
-		'C:\Users\tweiseth\AppData\Local'
+        "C:\Program Files\"
+        "C:\Program Files (x86)\"
+        "E:\Program Files\"
+        "E:\Program Files (x86)"
+        "$HOME\AppData\Roaming"
+        "$HOME\AppData\Local"
     )
 
     $date = get-date -Format dd.MM.yyyy
@@ -26,19 +26,26 @@ Function Uninstall-CleanUp() {
     foreach ($registrypath in $registrypaths) {
         if ($registrykey = Get-ChildItem registry::$registrypath | Where-Object { $_.Name -imatch "$softwarename" } | Select-Object -ExpandProperty Name) {
             if ($registrykey) {
-                Write-Host -ForegroundColor Green -BackgroundColor Black "Registry key: $registrykey"
+                Write-Host -ForegroundColor Green -BackgroundColor Black "Registry key:"
+                $registrykey
                 Write-Host -ForegroundColor Yellow -BackgroundColor Black -NoNewline "Remove registry key? (Y\N):"
                 $answer = Read-Host
                 if ($answer -eq "y") {
                     if ($RegistryBackup) {
-                        [void](New-Item -Path C:\ -ItemType Directory -Name "RegistryBackup_$date")
+                        if (!(Test-Path "C:\RegistryBackup_$date")) {
+                            [void](New-Item -Path C:\ -ItemType Directory -Name "RegistryBackup_$date")
+                        }
                         $backupfolder = "C:\RegistryBackup_$date"
-                        $regbackup = $registrykey.Replace('\','_')
-                        [void](reg export $registrykey $backupfolder\$regbackup.reg)
-                        Write-Host -ForegroundColor Green "Backup of registry key: $backupfolder\$regbackup.reg"
+                        $registrykey | foreach {
+                            $regbackup = $_.Replace('\', '_')
+                            [void](reg export $_ $backupfolder\$regbackup.reg /y)
+                            Write-Host -ForegroundColor Green "Backup of registry key: $backupfolder\$regbackup.reg"
+                        }
                     }
-                Remove-Item Registry::$registrykey
-                Write-Host -ForegroundColor Red "Registry key removed: $registrykey`n"
+                    $registrykey | foreach {
+                        Remove-Item Registry::$_ -Recurse
+                        Write-Host -ForegroundColor Red "Registry key removed: $_`n"
+                    }
                 }
             }
         }
