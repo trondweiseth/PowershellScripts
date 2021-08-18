@@ -1,4 +1,4 @@
-Function uninstall-CleanUp() {
+Function Uninstall-CleanUp() {
     param(
         [Parameter(Position = 0, Mandatory = $true)][string]$softwarename,
         [switch]$RegistryBackup
@@ -6,6 +6,7 @@ Function uninstall-CleanUp() {
 
     $registrypaths = @(
         'HKEY_CURRENT_USER\SOFTWARE\'
+		'HKEY_CURRENT_USER\SOFTWARE\Classes\'
         'HKEY_LOCAL_MACHINE\SOFTWARE\'
         'HKEY_USERS\.DEFAULT\Software\'
         'HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\'
@@ -16,6 +17,8 @@ Function uninstall-CleanUp() {
         'C:\Program Files (x86)\'
         'E:\Program Files\'
         'E:\Program Files (x86)'
+		'C:\Users\tweiseth\AppData\Roaming'
+		'C:\Users\tweiseth\AppData\Local'
     )
 
     $date = get-date -Format dd.MM.yyyy
@@ -53,11 +56,10 @@ Function uninstall-CleanUp() {
             }
         }
     }
-    
     if (!$softwarepath) {
         Write-Host -ForegroundColor Red "No matching folders."
     }
-    elseif (!$registrykey) {
+    if (!$registrykey) {
         Write-Host -ForegroundColor Red "No matching registry key."
     }
 }
