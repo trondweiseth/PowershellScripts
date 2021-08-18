@@ -29,8 +29,8 @@ Function Uninstall-CleanUp() {
     function testdata() {
         $registrypaths | ForEach-Object { [void](New-Item -Path registry::$_ -Name "UninstallCleanupTest") }
         $folderpaths | ForEach-Object { [void](New-Item -Path $_ -ItemType Directory -Name "UninstallCleanupTest") }
-        Write-Host -ForegroundColor Green -BackgroundColor Black "UninstallCleanupTest registry key and folders have been generated in all paths."
-        Write-Host -ForegroundColor Green -BackgroundColor Black "To test the script, use: Uninstall-CleanUp UninstallCleanupTest"
+        Write-Host -ForegroundColor Yellow "UninstallCleanupTest registry key and folders have been generated in all paths."
+        Write-Host -ForegroundColor Yellow "To test the script, use: Uninstall-CleanUp UninstallCleanupTest"
         break
     }
 	
