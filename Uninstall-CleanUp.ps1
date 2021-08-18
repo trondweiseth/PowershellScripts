@@ -16,9 +16,9 @@ Function Uninstall-CleanUp() {
         "C:\Program Files\"
         "C:\Program Files (x86)\"
         "E:\Program Files\"
-        "E:\Program Files (x86)"
-        "$HOME\AppData\Roaming"
-        "$HOME\AppData\Local"
+        "E:\Program Files (x86)\"
+        "$HOME\AppData\Roaming\"
+        "$HOME\AppData\Local\"
     )
 
     $date = get-date -Format dd.MM.yyyy
