@@ -167,7 +167,6 @@ $winform.Controls.Add($textboxlable3)
 $objTextBox3 = New-Object System.Windows.Forms.TextBox 
 $objTextBox3.Location = New-Object System.Drawing.Size(375, 190) 
 $objTextBox3.Width = '305'
-$objTextBox3.Text = "Sharepoint 2013 CU 2021 August"
 $winform.Controls.Add($objTextBox3)
 
 $textboxlable4 = New-Object System.Windows.Forms.Label
