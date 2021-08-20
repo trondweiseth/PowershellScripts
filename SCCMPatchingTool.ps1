@@ -167,6 +167,7 @@ $winform.Controls.Add($textboxlable3)
 $objTextBox3 = New-Object System.Windows.Forms.TextBox 
 $objTextBox3.Location = New-Object System.Drawing.Size(375, 190) 
 $objTextBox3.Width = '305'
+
 $winform.Controls.Add($objTextBox3)
 
 $textboxlable4 = New-Object System.Windows.Forms.Label
@@ -194,7 +195,13 @@ $winform.Controls.Add($objTextBox5)
 # Code goes here:
 
 Function serverstatus() {
-    $objRichTextBox1.AppendText("Checking server status...`n")
+    if ($objTextBox1.Lines) {
+        $objRichTextBox1.AppendText("Checking server status...`n")
+    }
+    else {
+        $objRichTextBox1.AppendText("ERROR: No host(s).`n")
+    }
+    
     $objTextBox1.Lines | foreach {
         $objRichTextBox1.AppendText(
             (Get-SCVirtualMachine $_ | select-object name, status | out-string)
@@ -205,7 +212,13 @@ Function serverstatus() {
 }
 
 Function restartserver() {
-    $objRichTextBox1.AppendText("Restarting server(s)...`n")
+    if ($objTextBox1.Lines) {
+        $objRichTextBox1.AppendText("Restarting server(s)...`n")
+    }
+    else {
+        $objRichTextBox1.AppendText("ERROR: No host(s).`n")
+    }
+    
     $objTextBox1.Lines | foreach {
         $objRichTextBox1.AppendText((restart-computer $_ -force -ErrorAction SilentlyContinue))
         $objRichTextBox1.SelectionStart = $objRichTextBox1.TextLength
@@ -213,7 +226,13 @@ Function restartserver() {
     }
 }
 Function stopserver() {
-    $objRichTextBox1.AppendText("Stopping server(s)...`n")
+    if ($objTextBox1.Lines) {
+        $objRichTextBox1.AppendText("Stopping server(s)...`n")
+    }
+    else {
+        $objRichTextBox1.AppendText("ERROR: No host(s).`n")
+    }
+    
     $objTextBox1.Lines | foreach {
         $objRichTextBox1.AppendText((Get-SCVirtualMachine $_ |  Stop-SCVirtualMachine -Shutdown))
         $objRichTextBox1.SelectionStart = $objRichTextBox1.TextLength
@@ -222,7 +241,13 @@ Function stopserver() {
 }
 
 Function removecheckpoints() {
-    $objRichTextBox1.AppendText("Removing checkpoint(s)...`n")
+    if ($objTextBox1.Lines) {
+        $objRichTextBox1.AppendText("Removing checkpoint(s)...`n")
+    }
+    else {
+        $objRichTextBox1.AppendText("ERROR: No host(s).`n")
+    }
+    
     $objTextBox1.Lines | foreach {
         $objRichTextBox1.AppendText((Get-SCVirtualMachine $_ | select-object name, status | out-string))
         $objRichTextBox1.SelectionStart = $objRichTextBox1.TextLength
@@ -232,7 +257,13 @@ Function removecheckpoints() {
 
 Function coldcheckpoint() {
     $description = $objTextBox2.Text
-    $objRichTextBox1.AppendText("Creating checkpoint...`n")
+    if ($objTextBox1.Lines) {
+        $objRichTextBox1.AppendText("Creating checkpoint...`n")
+    }
+    else {
+        $objRichTextBox1.AppendText("ERROR: No host(s).`n")
+    }
+    
     $objTextBox1.Lines | foreach {
         $objRichTextBox1.AppendText((Get-SCVirtualMachine $server | New-SCVMCheckpoint -Description $description -RunAsynchronously))
         $objRichTextBox1.SelectionStart = $objRichTextBox1.TextLength
@@ -241,7 +272,13 @@ Function coldcheckpoint() {
 }
 
 Function getchekcpoints() {
-    $objRichTextBox1.AppendText("Getting checkpoint(s)...`n")
+    if ($objTextBox1.Lines) {
+        $objRichTextBox1.AppendText("Getting checkpoint(s)...`n")
+    }
+    else {
+        $objRichTextBox1.AppendText("ERROR: No host(s).`n")
+    }
+    
     $objTextBox1.Lines | foreach {
         $checkpoints = Get-SCVirtualMachine $_ | Get-SCVMCheckpoint
         if ($checkpoints) {
@@ -256,7 +293,13 @@ Function getchekcpoints() {
 }
 
 Function startServer() {
-    $objRichTextBox1.AppendText("Starting server(s)...`n")
+    if ($objTextBox1.Lines) {
+        $objRichTextBox1.AppendText("Starting server(s)...`n")
+    }
+    else {
+        $objRichTextBox1.AppendText("ERROR: No host(s).`n")
+    }
+    
     $objTextBox1.Lines | foreach {
         $objRichTextBox1.AppendText((Get-SCVirtualMachine $server |  start-SCVirtualMachine))
         $objRichTextBox1.SelectionStart = $objRichTextBox1.TextLength
@@ -267,7 +310,13 @@ Function startServer() {
 Function Run-SCCMClientAction {
 
     $ClientAction = $SCCMClientAction.Text
-    $objRichTextBox1.AppendText("Running SCCM action: ${ClientAction}...`n")
+    if ($objTextBox1.Lines) {
+        $objRichTextBox1.AppendText("Running SCCM action: ${ClientAction}...`n")
+    }
+    else {
+        $objRichTextBox1.AppendText("ERROR: No host(s).`n")
+    }
+    
     $objTextBox1.Lines | foreach {
         $ActionResults = @()
         Try { 
@@ -313,7 +362,13 @@ Function Run-SCCMClientAction {
 } 
 
 Function removesccmcache() {
-    $objRichTextBox1.AppendText("Removing SCCM cache...`n")
+
+    if ($objTextBox1.Lines) {
+        $objRichTextBox1.AppendText("Removing SCCM cache...`n")
+    }
+    else {
+        $objRichTextBox1.AppendText("ERROR: No host(s).`n")
+    }
     $objTextBox1.Lines | foreach {
         Invoke-Command -ComputerName $_ -Credential $cred -ScriptBlock {
 
@@ -339,7 +394,14 @@ Function triggerinstall() {
 
     $hash = $objTextBox4.Text
     $appversion = $objTextBox5.Text
-    $objRichTextBox1.AppendText("Starting app installation...`n")
+    if ($objTextBox1.Lines) {
+        $objRichTextBox1.AppendText("Starting app installation...`n")
+
+    }
+    else {
+        $objRichTextBox1.AppendText("ERROR: No host(s).`n")
+    }
+    
     $objTextBox1.Lines | foreach {
         $objRichTextBox1.AppendText((
           
@@ -382,7 +444,12 @@ Function installstatus() {
 
     $hash = $objTextBox4.Text
     $appversion = $objTextBox5.Text
-    $objRichTextBox1.AppendText("Checking installation status...`n")
+    if ($objTextBox1.Lines) {
+        $objRichTextBox1.AppendText("Checking installation status...`n")
+    }
+    else {
+        $objRichTextBox1.AppendText("ERROR: No host(s).`n")
+    }
     $objTextBox1.Lines | foreach {
 
         $res = Invoke-Command -ComputerName $_ -ArgumentList($hash, $appversion) -ScriptBlock {
@@ -405,5 +472,4 @@ Function installstatus() {
         $objRichTextBox1.ScrollToCaret()
     }
 }
-
 [void]$winform.ShowDialog()
