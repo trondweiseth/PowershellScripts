@@ -130,8 +130,8 @@ $SCCMClientAction               = New-Object System.Windows.Forms.ComboBox
 $SCCMClientAction.Width         = '160'
 $SCCMClientAction.location      = New-Object System.Drawing.Point(520, 10)
 $SCCMClientAction.Font          = New-Object System.Drawing.Font('Microsoft Sans Serif', 10)
-$SCCMClientAction.SelectedIndex = '0'
 $SCCMClientAction.Items.AddRange($clientaction)
+$SCCMClientAction.SelectedIndex = '0'
 $winform.Controls.Add($SCCMClientAction)
 
 $RunSCCMClientAction            = New-Object system.Windows.Forms.Button
