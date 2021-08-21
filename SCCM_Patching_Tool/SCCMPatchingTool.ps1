@@ -1,5 +1,5 @@
 <# .SYNOPSIS
-     SCCM Patching Pool
+     SCCM Patching Tool
 .DESCRIPTION
      Tool to make installing patches from software center on multiple host's easier.
      This scrip uses the the system center virtual machine manager module to manage the vm's.
