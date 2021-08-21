@@ -15,5 +15,6 @@ CP Description is to provide a description for Checkpoint (CP).
 App Version check the software center for the version entered.
 AppName is the name of the software to be installed.
 
-![sccmtool](https://user-images.githubusercontent.com/20613957/130332250-3f04e584-a8b9-4544-8ff5-4ff62b5b1ea4.png)
+
+![sccmtool](https://user-images.githubusercontent.com/20613957/130332351-61c72d20-662d-47a2-a1eb-c77c375e539b.png)
 
