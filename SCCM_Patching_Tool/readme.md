@@ -1,5 +1,11 @@
 # SCCM Patching Tool
 
+Requirements:
+
+    * SCVMM PowerShell module
+    * WinRm Access to vm's for remote PSSession
+    
+
 GUI tool to make patching from software center and virtual machine manager easier.
 
 The "Host(s)" field is used to enter one or more vm's to perform pathing against. (Should not be any blank space/new line at the bottom)
