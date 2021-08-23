@@ -71,7 +71,7 @@ $Set_Credential               = New-Object system.Windows.Forms.Button
 $Set_Credential.Location      = New-Object System.Drawing.Size(10,10) 
 $Set_Credential.Size          = New-Object System.Drawing.Size(100,20)
 $Set_Credential.Text          = 'Set Credentials'
-$Set_Credential.add_Click({ $Global:cred = Get-Credential mgmt\$env:USERNAME })
+$Set_Credential.add_Click({ $Global:cred = Get-Credential $env:USERNAME })
 $winform.Controls.Add($Set_Credential)
 
 $serverStatus                 = New-Object system.Windows.Forms.Button
@@ -189,7 +189,7 @@ $winform.Controls.Add($textboxlable3)
 $objTextBox3                  = New-Object System.Windows.Forms.TextBox 
 $objTextBox3.Location         = New-Object System.Drawing.Size(375,190) 
 $objTextBox3.Width            = '305'
-$objTextBox3.Text             = 'Sharepoint 2013 CU 2021 August'
+$objTextBox3.Text             = 'Sharepoint 2013 CU 2021 January'
 $winform.Controls.Add($objTextBox3)
 
 $textboxlable4                = New-Object System.Windows.Forms.Label
@@ -201,7 +201,7 @@ $winform.Controls.Add($textboxlable4)
 $objTextBox4                  = New-Object System.Windows.Forms.TextBox 
 $objTextBox4.Location         = New-Object System.Drawing.Size(180,220)
 $objTextBox4.Width            = '500'
-$objTextBox4.Text             = '1F085D1334C20DA018B929C3D018BAC514CAA5BA42E2AD63BF72E93E79B476F2'
+$objTextBox4.Text             = '1F085D1334C20DA018B925C3D018BAC514CAA5BA42E2AD63BF32E93E28B476F2'
 $winform.Controls.Add($objTextBox4)
 
 $textboxlable5                = New-Object System.Windows.Forms.Label
@@ -213,7 +213,7 @@ $winform.Controls.Add($textboxlable5)
 $objTextBox5                  = New-Object System.Windows.Forms.TextBox 
 $objTextBox5.Location         = New-Object System.Drawing.Size(95,190) 
 $objTextBox5.Width            = '215'
-$objTextBox5.Text             = '15.0.5371.1001'
+$objTextBox5.Text             = '15.0.5371.1005'
 $winform.Controls.Add($objTextBox5)
 
 $saveInput                    = New-Object system.Windows.Forms.Button
