@@ -220,7 +220,7 @@ $newhash = $objTextBox4.Text
 #Saves text to AppName
 $appnamestring = (Get-Content $scriptlocation) | where { $_ -match "objTextBox3.Text             = '" -and $_ -notmatch 'replace' }
 $currentappname = $appnamestring.Split("'")[1]
-$newappname = $objTextBox3.Text$scriptlocation = $MyInvocation.MyCommand.Path
+$newappname = $objTextBox3.Text
 Add-Type -AssemblyName System.Windows.Forms
 [System.Windows.Forms.Application]::EnableVisualStyles()
 
