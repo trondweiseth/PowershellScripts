@@ -1,5 +1,4 @@
 Function Net-Test {
-
     [CmdletBinding()]
     param(
         [Parameter(Position = 0, Mandatory = $false)][string]$rhost,
@@ -10,7 +9,7 @@ Function Net-Test {
     )
 
     function help() {
-        write-host "SYNTAX: Net-Test [[-rhost] <string>] [-port <string>] [-remote <string>] [-timeout <string>] [-help]  [<CommonParameters>]" -ForegroundColor Yellow
+        write-host "SYNTAX: Net-Test [[-rhost] <string>] [-port <string>] [-remote <string>] [-timeout <string>] [-help]  [<CommonParameters>]" -ForegroundColor Yellow -BackgroundColor Black
     }
 
     if ($help -or !$rhost) { help } else {
@@ -22,19 +21,12 @@ Function Net-Test {
                 param([string]$rhost, [string]$port, [string]$timeout)
                 if (!$timeout) { $timeout = 100 }
                 $ipmatch = $rhost -match "^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$" -and [ipaddress]$rhost
-                $dnsres = Resolve-DnsName $rhost -DnsOnly -ErrorAction SilentlyContinue 
-                if ($? -and $dnsres -ne $null) {
+                if ($dnsres = Resolve-DnsName $rhost -DnsOnly -ErrorAction SilentlyContinue) {
                     if ($dnsres | Select-Object -ExpandProperty NameHost -First 1 -ErrorAction SilentlyContinue) {
                         $ComputerName = $dnsres | Select-Object -ExpandProperty NameHost -First 1
                     }
                     else {
                         $ComputerName = $dnsres | Select-Object -ExpandProperty Name -First 1
-                    }
-                    if ($ipmatch -eq $true) {
-                        $RA = $rhost
-                    }
-                    else {
-                        $RA = $dnsres | ForEach-Object { $_.IPAddress }
                     }
                 }
                 else {
@@ -47,7 +39,9 @@ Function Net-Test {
                         $RA = $rhost
                     }
                 }
-                $netinterface = Get-NetIPInterface | Where-Object { $_.ConnectionState -eq "Connected" -and $_.AddressFamily -eq "IPv4" } | Select-Object -ExpandProperty InterfaceAlias -First 1
+                if ($ipmatch -eq $true) {$RA = $rhost}
+                else {$RA = $dnsres | ForEach-Object { $_.IPAddress }}
+                $netinterface = Get-NetIPConfiguration | foreach IPv4DefaultGateway | select -ExpandProperty InterfaceAlias
                 $srcip = Get-NetIPAddress -InterfaceAlias $netinterface -AddressFamily IPv4 | Select-Object -ExpandProperty IPAddress
                 $ErrorActionPreference = "SilentlyContinue"
                 if ((Test-Connection localhost -Count 1 | Get-Member | foreach { $_.Name }) -imatch "Latency") {
@@ -116,31 +110,25 @@ Function Net-Test {
         else {
             if (!$timeout) { $timeout = 100 }
             $ipmatch = $rhost -match "^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$" -and [ipaddress]$rhost
-            $dnsres = Resolve-DnsName $rhost -DnsOnly -ErrorAction SilentlyContinue 
-            if ($? -and $dnsres -ne $null) {
+            if ($dnsres = Resolve-DnsName $rhost -DnsOnly -ErrorAction SilentlyContinue) {
                 if ($dnsres | Select-Object -ExpandProperty NameHost -First 1 -ErrorAction SilentlyContinue) {
                     $ComputerName = $dnsres | Select-Object -ExpandProperty NameHost -First 1
                 }
                 else {
                     $ComputerName = $dnsres | Select-Object -ExpandProperty Name -First 1
                 }
-                if ($ipmatch -eq $true) {
-                    $RA = $rhost
-                }
-                else {
-                    $RA = $dnsres | ForEach-Object { $_.IPAddress }
-                }
             }
             else {
-                Write-Host -ForegroundColor Yellow -BackgroundColor Black "WARNING: Could not resolve DNS name`n"
+                Write-Warning "Could not resolve DNS name`n"
                 $ComputerName = $rhost
                 if ($ipmatch -eq $false) { break }
             }
-            $netinterface = Get-NetIPInterface | Where-Object { $_.ConnectionState -eq "Connected" -and $_.AddressFamily -eq "IPv4" } | Select-Object -ExpandProperty InterfaceAlias -First 1
+            if ($ipmatch -eq $true) {$RA = $rhost}
+            else {$RA = $dnsres | ForEach-Object { $_.IPAddress }}
+            $netinterface = Get-NetIPConfiguration | foreach IPv4DefaultGateway | select -ExpandProperty InterfaceAlias
             $srcip = Get-NetIPAddress -InterfaceAlias $netinterface -AddressFamily IPv4 | Select-Object -ExpandProperty IPAddress
             if ((Test-Connection localhost -Count 1 | Get-Member | ForEach-Object { $_.Name }) -imatch "Latency") {
-                $responsetime = Test-Connection $rhost -Count 1 -ErrorAction SilentlyContinue  | Select-Object -ExpandProperty Latency
-                if ($?) {
+                if ($responsetime = Test-Connection $rhost -Count 1 -ErrorAction SilentlyContinue  | Select-Object -ExpandProperty Latency) {
                     $ping = "True"
                 }
                 else {
