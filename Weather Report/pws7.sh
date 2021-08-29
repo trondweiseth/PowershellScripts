@@ -1,8 +1,8 @@
-curl http://wttr.in/baerum?0F
 Function WeatherReport(){
-	param([switch]$Full,[switch]$Day,[switch]$Moon)
-	if ($Full) {curl http://wttr.in/baerum?F}
-	if ($Day) {curl http://wttr.in/baerum?1F}
-	if ($Moon) {curl http://wttr.in/Moon?F}
-	else {curl http://wttr.in/baerum?0F}
+	param([string]$Location,[switch]$Full,[switch]$Day,[switch]$Moon)
+	if (!$Location) {$Location = "baerum"}
+	if ($Full) {curl "https://wttr.in/${Location}?F"}
+	if ($Day) {curl "https://wttr.in/${Location}?1F"}
+	if ($Moon) {curl "https://wttr.in/Moon?F"}
+	if (!$Full -and !$Day -and !$Moon) {curl "https://wttr.in/${Location}?0F"}
 }
