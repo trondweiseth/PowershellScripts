@@ -5,12 +5,12 @@ Function Net-Test {
         [Parameter(Position = 0, Mandatory = $false)][string]$rhost,
         [string]$port,
         [string]$remote,
-        [string]$timeout,
+        [int]$timeout,
         [switch]$help
     )
 
     function help() {
-        write-host "SYNTAX: Net-Test [[-rhost] <string>] [-port <string>] [-remote <string>] [-timeout <string>] [-help]  [<CommonParameters>]" -ForegroundColor Yellow
+        write-host "SYNTAX: Net-Test [[-rhost] <string>] [-port <string>] [-remote <string>] [-timeout <int>] [-help]" -ForegroundColor Yellow
     }
 
     if ($help -or !$rhost) { help } else {
