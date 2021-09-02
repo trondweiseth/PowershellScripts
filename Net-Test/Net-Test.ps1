@@ -22,7 +22,7 @@ Function Net-Test {
                 param([string]$rhost, [string]$port, [string]$timeout)
                 if (!$timeout) { $timeout = 100 }
                 $ipmatch = $rhost -match "^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$" -and [ipaddress]$rhost
-                $dnsres = Resolve-DnsName $rhost -DnsOnly -ErrorAction SilentlyContinue 
+                $dnsres = Resolve-DnsName $rhost -DnsOnly -ErrorAction SilentlyContinue
                 if ($? -and $dnsres -ne $null) {
                     if ($dnsres | Select-Object -ExpandProperty NameHost -First 1 -ErrorAction SilentlyContinue) {
                         $ComputerName = $dnsres | Select-Object -ExpandProperty NameHost -First 1
@@ -32,26 +32,28 @@ Function Net-Test {
                     }
                     if ($ipmatch -eq $true) {
                         $RA = $rhost
+                        $ipAddresses = $rhost
                     }
                     else {
-                        $RA = $dnsres | ForEach-Object { $_.IPAddress }
+                        $RA = $dnsres | Select-Object -ExpandProperty IP4Address -ErrorAction SilentlyContinue -First 2
+            
                     }
                 }
                 else {
                     Write-Warning "Could not resolve DNS name`n"
                     $ComputerName = $rhost
-                    if ($ipmatch -eq $false) {
-                        break
-                    }
-                    else {
-                        $RA = $rhost
-                    }
+                    if ($ipmatch -eq $false) { break }
                 }
-                $netinterface = Get-NetIPInterface | Where-Object { $_.ConnectionState -eq "Connected" -and $_.AddressFamily -eq "IPv4" } | Select-Object -ExpandProperty InterfaceAlias -First 1
-                $srcip = Get-NetIPAddress -InterfaceAlias $netinterface -AddressFamily IPv4 | Select-Object -ExpandProperty IPAddress
-                if ((Test-Connection localhost -Count 1 | Get-Member | foreach { $_.Name }) -imatch "Latency") {
-                    $responsetime = Test-Connection $rhost -Count 1 -ErrorAction SilentlyContinue  | Select-Object -ExpandProperty Latency
-                    if ($?) {
+    
+                if ($ipAddresses = $dnsres | Select-Object -ExpandProperty IP4Address -ErrorAction SilentlyContinue) {
+                    $ipAddresses = $dnsres | Select-Object -ExpandProperty IP4Address -ErrorAction SilentlyContinue
+                }
+                else { $ipAddresses = $rhost }
+                $nicInformation = Find-NetRoute -RemoteIPAddress $RA 
+                $srcip = $nicInformation | select -ExpandProperty IPAddress -ErrorAction SilentlyContinue
+                $netinterface = $nicInformation | select -ExpandProperty InterfaceAlias -ErrorAction SilentlyContinue -First 1
+                if ((Test-Connection localhost -Count 1 | Get-Member | ForEach-Object { $_.Name }) -imatch "Latency") {
+                    if ($responsetime = Test-Connection $rhost -Count 1 -ErrorAction SilentlyContinue  | Select-Object -ExpandProperty Latency) {
                         $ping = "True"
                     }
                     else {
@@ -67,12 +69,12 @@ Function Net-Test {
                         $ping = "False"
                     }
                 }
-
+    
                 function portinfotable() {
                 
                     Write-Host -ForegroundColor Cyan "===================================="
                     Write-Host -NoNewline -ForegroundColor Green "CumputerName           : "; Write-Host -ForegroundColor Yellow "$ComputerName"
-                    Write-Host -NoNewline -ForegroundColor Green "RemoteAddress          : "; Write-Host -ForegroundColor Yellow "$RA"
+                    Write-Host -NoNewline -ForegroundColor Green "RemoteAddress          : "; Write-Host -ForegroundColor Yellow "$Remadr"
                     Write-Host -NoNewline -ForegroundColor Green "RemotePort             : "; Write-Host -ForegroundColor Yellow "$port"
                     Write-Host -NoNewline -ForegroundColor Green "InterfaceAlias         : "; Write-Host -ForegroundColor Yellow "$netinterface"
                     Write-Host -NoNewline -ForegroundColor Green "SourceAddress          : "; Write-Host -ForegroundColor Yellow "$srcip"
@@ -81,24 +83,29 @@ Function Net-Test {
                     Write-Host -NoNewline -ForegroundColor Green "TcpTestSucceeded       : "; Write-Host -ForegroundColor Yellow "$res"
                     Write-Host -ForegroundColor Cyan "===================================="
                 }
-
+    
                 if ($port) {
-                    $tcpobject = new-Object system.Net.Sockets.TcpClient 
-                    #Connect to remote machine's port               
-                    $connect = $tcpobject.BeginConnect($rhost, $port, $null, $null) 
-                    #Configure a timeout before quitting - time in milliseconds 
-                    $wait = $connect.AsyncWaitHandle.WaitOne($timeout, $false) 
-                    If (-Not $Wait) {
-                        Write-Warning "TCP connect to ${rhost}:$port failed`n"
-                        $res = "False"
-                        portinfotable
+                    $ipAddresses | ForEach-Object {
+                        $tcpobject = new-Object system.Net.Sockets.TcpClient 
+                        #Connect to remote machine's port               
+                        $connect = $tcpobject.BeginConnect($_, $port, $null, $null) 
+                        #Configure a timeout before quitting - time in milliseconds 
+                        $wait = $connect.AsyncWaitHandle.WaitOne($timeout, $false) 
+                        If (-Not $Wait) {
+                            Write-Warning "TCP connect to ($_ : $port) failed"
+                            $res = "False"
+                            $Remadr = $_
+                        }
+                        Else {
+                            $error.clear()
+                            $tcpobject.EndConnect($connect) | out-Null
+                            $res = "True"
+                            $Remadr = $_
+                            portinfotable
+                            break
+                        }
                     }
-                    Else {
-                        $error.clear()
-                        $tcpobject.EndConnect($connect) | out-Null
-                        $res = "True"
-                        portinfotable
-                    }
+                    portinfotable
                 }
                 else {
                     Write-Host -ForegroundColor Cyan "===================================="
@@ -115,7 +122,7 @@ Function Net-Test {
         else {
             if (!$timeout) { $timeout = 100 }
             $ipmatch = $rhost -match "^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$" -and [ipaddress]$rhost
-            $dnsres = Resolve-DnsName $rhost -DnsOnly -ErrorAction SilentlyContinue 
+            $dnsres = Resolve-DnsName $rhost -DnsOnly -ErrorAction SilentlyContinue
             if ($? -and $dnsres -ne $null) {
                 if ($dnsres | Select-Object -ExpandProperty NameHost -First 1 -ErrorAction SilentlyContinue) {
                     $ComputerName = $dnsres | Select-Object -ExpandProperty NameHost -First 1
@@ -125,9 +132,11 @@ Function Net-Test {
                 }
                 if ($ipmatch -eq $true) {
                     $RA = $rhost
+                    $ipAddresses = $rhost
                 }
                 else {
-                    $RA = $dnsres | ForEach-Object { $_.IPAddress }
+                    $RA = $dnsres | Select-Object -ExpandProperty IP4Address -ErrorAction SilentlyContinue -First 2
+        
                 }
             }
             else {
@@ -135,8 +144,14 @@ Function Net-Test {
                 $ComputerName = $rhost
                 if ($ipmatch -eq $false) { break }
             }
-            $netinterface = Get-NetIPInterface | Where-Object { $_.ConnectionState -eq "Connected" -and $_.AddressFamily -eq "IPv4" } | Select-Object -ExpandProperty InterfaceAlias -First 1
-            $srcip = Get-NetIPAddress -InterfaceAlias $netinterface -AddressFamily IPv4 | Select-Object -ExpandProperty IPAddress
+
+            if ($ipAddresses = $dnsres | Select-Object -ExpandProperty IP4Address -ErrorAction SilentlyContinue) {
+                $ipAddresses = $dnsres | Select-Object -ExpandProperty IP4Address -ErrorAction SilentlyContinue
+            }
+            else { $ipAddresses = $rhost }
+            $nicInformation = Find-NetRoute -RemoteIPAddress $RA 
+            $srcip = $nicInformation | select -ExpandProperty IPAddress -ErrorAction SilentlyContinue
+            $netinterface = $nicInformation | select -ExpandProperty InterfaceAlias -ErrorAction SilentlyContinue -First 1
             if ((Test-Connection localhost -Count 1 | Get-Member | ForEach-Object { $_.Name }) -imatch "Latency") {
                 if ($responsetime = Test-Connection $rhost -Count 1 -ErrorAction SilentlyContinue  | Select-Object -ExpandProperty Latency) {
                     $ping = "True"
@@ -159,7 +174,7 @@ Function Net-Test {
             
                 Write-Host -ForegroundColor Cyan "===================================="
                 Write-Host -NoNewline -ForegroundColor Green "CumputerName           : "; Write-Host -ForegroundColor Yellow "$ComputerName"
-                Write-Host -NoNewline -ForegroundColor Green "RemoteAddress          : "; Write-Host -ForegroundColor Yellow "$RA"
+                Write-Host -NoNewline -ForegroundColor Green "RemoteAddress          : "; Write-Host -ForegroundColor Yellow "$Remadr"
                 Write-Host -NoNewline -ForegroundColor Green "RemotePort             : "; Write-Host -ForegroundColor Yellow "$port"
                 Write-Host -NoNewline -ForegroundColor Green "InterfaceAlias         : "; Write-Host -ForegroundColor Yellow "$netinterface"
                 Write-Host -NoNewline -ForegroundColor Green "SourceAddress          : "; Write-Host -ForegroundColor Yellow "$srcip"
@@ -170,22 +185,27 @@ Function Net-Test {
             }
 
             if ($port) {
-                $tcpobject = new-Object system.Net.Sockets.TcpClient 
-                #Connect to remote machine's port               
-                $connect = $tcpobject.BeginConnect($rhost, $port, $null, $null) 
-                #Configure a timeout before quitting - time in milliseconds 
-                $wait = $connect.AsyncWaitHandle.WaitOne($timeout, $false) 
-                If (-Not $Wait) {
-                    Write-Warning "TCP connect to ${rhost}:$port failed`n"
-                    $res = "False"
-                    portinfotable
+                $ipAddresses | ForEach-Object {
+                    $tcpobject = new-Object system.Net.Sockets.TcpClient 
+                    #Connect to remote machine's port               
+                    $connect = $tcpobject.BeginConnect($_, $port, $null, $null) 
+                    #Configure a timeout before quitting - time in milliseconds 
+                    $wait = $connect.AsyncWaitHandle.WaitOne($timeout, $false) 
+                    If (-Not $Wait) {
+                        Write-Warning "TCP connect to ($_ : $port) failed"
+                        $res = "False"
+                        $Remadr = $_
+                    }
+                    Else {
+                        $error.clear()
+                        $tcpobject.EndConnect($connect) | out-Null
+                        $res = "True"
+                        $Remadr = $_
+                        portinfotable
+                        break
+                    }
                 }
-                Else {
-                    $error.clear()
-                    $tcpobject.EndConnect($connect) | out-Null
-                    $res = "True"
-                    portinfotable
-                }
+                portinfotable
             }
             else {
                 Write-Host -ForegroundColor Cyan "===================================="
