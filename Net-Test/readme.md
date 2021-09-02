@@ -8,7 +8,7 @@ Some older powershell versions don't have the newer Test-NetConnection to test f
 
 SYNTAX
 
-    Net-Test [[-rhost] <string>] [-port <string>] [-remote <string>] [-timeout <int>] [-help] [<CommonParameters>]
+    Net-Test [[-rhost] <string>] [-port <string>] [-remote <string>] [-timeout <int>] [-help]
 
 -Remote - Runs the test from a remote host towards rhost.
 I.e. If you want to test the port connectivity back from the target host, you can use the -remote parameter.
