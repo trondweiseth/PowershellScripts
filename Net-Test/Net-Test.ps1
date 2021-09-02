@@ -201,8 +201,6 @@ Function Net-Test {
                         $tcpobject.EndConnect($connect) | out-Null
                         $res = "True"
                         $Remadr = $_
-                        portinfotable
-                        break
                     }
                 }
                 portinfotable
