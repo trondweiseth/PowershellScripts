@@ -28,7 +28,7 @@ $PROD = @(
 New-Item -Path $HOME\Documents -Name SharepointHosts -ItemType "directory"
 $FolderLocation =  "$HOME\Documents\SharepointHosts"
 
-$ENV01.Trim()  | Set-Content $FolderLocation\ENV01.txt
+$ENV01.Trim() | Set-Content $FolderLocation\ENV01.txt
 $ENV02.Trim() | Set-Content $FolderLocation\ENV02.txt
-$TEST.Trim()   | Set-Content $FolderLocation\TEST.txt
+$TEST.Trim()  | Set-Content $FolderLocation\TEST.txt
 $PROD.Trim()  | Set-Content $FolderLocation\PROD.txt
