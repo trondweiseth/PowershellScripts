@@ -372,20 +372,33 @@ Function SP-TriggerInstallation {
 Function SP-InstallationStatus{
     [CmdletBinding()]
     param(
-    [Parameter(Position=0)][string]$AppName,
-    [int]$Time,
-    [switch]$Wait
-    )
-
+        [Parameter(Position=0)][string]$AppName,
+        [int]$Time,
+        [switch]$Wait
+        )
+        
     errormsg
     if ($null -eq $Time) {$Time = 30}
-    if ($AppName -eq '') {
-        $InstallStatusAppName = {Sharepoint 2016 CU 2021 March} # "Sharepoint 2016 CU 2021 March"
+    if ($null -eq $AppName -or $AppName -eq '') {
+        # "Sharepoint 2016 CU 2021 July"
+        $InstallStatusAppName = {Sharepoint 2016 CU 2021 July}
+        $validate = Read-Host -Prompt "AppName is: '$InstallStatusAppName'. Do you want you change the AppName? (y/n) (Default n)" -ErrorAction SilentlyContinue
+        if ($validate -imatch 'y') {
+            $newInstallStatusAppName = Read-Host -Prompt "AppName "
+            $saveAppName = Read-Host -Prompt "Do you want to save AppName? (y/n) (Default n)" -ErrorAction SilentlyContinue
+            if ($saveAppName -imatch 'y') {
+                $currentAppName = ((Get-Content $scriptlocation | Where-Object { $_ -match "InstallStatusAppName"}).Split('{')[1]).Trim("}")
+                (Get-Content $scriptlocation).Replace("$currentAppName","$newInstallStatusAppName") | Set-Content -Path $scriptlocation
+            }
+        }
     }
     else {
         $InstallStatusAppName = $AppName
-        $currentAppName = ((Get-Content $scriptlocation | Where-Object { $_ -imatch "InstallStatusAppName"}).Split('{')[1]).Trim("}")
-        (Get-Content $scriptlocation).Replace("$currentAppName","$InstallStatusAppName") | Set-Content -Path $scriptlocation
+        $saveAppName = Read-Host -Prompt "Do you want to save AppName? (y/n) (Default n)" -ErrorAction SilentlyContinue
+        if ($saveAppName -imatch 'y') {
+            $currentAppName = ((Get-Content $scriptlocation | Where-Object { $_ -imatch "InstallStatusAppName"}).Split('{')[1]).Trim("}")
+            (Get-Content $scriptlocation).Replace("$currentAppName","$InstallStatusAppName") | Set-Content -Path $scriptlocation
+        }
     }
 
     Write-Host -ForegroundColor Yellow "Checking installation staus for $InstallStatusAppName..."
