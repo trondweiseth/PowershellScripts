@@ -28,6 +28,7 @@
 #>
 
 $scriptlocation = $MyInvocation.MyCommand.Path
+Clear-Variable servers
 
 Function SP-Servers() {
     param(
