@@ -9,7 +9,7 @@
 #
 # You need to change Site configuration variable $SiteCode and $ProviderMachineName with  your sccm server and site number.
 # Alternatively, you can get the first part of the function with the code provided by your SCCM.
-# 1) Open SCCM. 2) Click the blue dropdown menu beside Searh tab in top left corner. 4) Click 'Connect via PowerShell ISE.
+# 1) Open SCCM. 2) Click the blue dropdown menu beside Search tab in top left corner. 4) Click 'Connect via PowerShell ISE.
 # 5) Copy and replace the same code inside SP-InstallationStatus function.
 
 <# SCCM script to detect application:
