@@ -4,4 +4,4 @@ Copy the script and run Import-Module TestUDPConnection.ps1 or function to the h
 
 # Usage
     On the source host: Test-NetConnectionUDP -ComputerName dc01.contoso.net -Port 53 -SourcePort 10000 (sourceport defaults to 50000 if not set)
-    On the destination host: Start-UDPServer -Port 50000 (port defaults to 10000 if not set)
+    On the destination host: Start-UDPServer -Port 10000 (port defaults to 10000 if not set)
