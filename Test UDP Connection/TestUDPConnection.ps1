@@ -38,7 +38,7 @@ function Test-NetConnectionUDP {
     param (
         # Desit
         [Parameter(Mandatory = $true)]
-        [int32]$Port,
+        [int32]$Port = 10000,
 
         # Parameter help description
         [Parameter(Mandatory = $true)]
