@@ -12,12 +12,6 @@ Function nc() {
     .PARAMETER out
     Sending output to Out-GridView
 
-    .PARAMETER getprocess
-    Getting the processname for all active connections
-
-    .PARAMETER fullreport
-    Runs all parameters
-
     .EXAMPLE
     netconn [-out] [-resolve] [-getprocess] [-all]
 
