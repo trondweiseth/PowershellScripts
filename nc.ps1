@@ -28,6 +28,10 @@ Function nc() {
 
         [Parameter(Mandatory=$false)]
         [switch]
+        $VirusTotal,
+
+        [Parameter(Mandatory=$false)]
+        [switch]
         $Out,
 
         [Parameter(Mandatory = $false,
@@ -50,11 +54,11 @@ Function nc() {
         function connquery() {
             if ($Status) {
                 Get-NetTCPConnection -LocalAddress $localip -state $Status | 
-                Select-Object LocalAddress,LocalPort,RemoteAddress,RemotePort,State,AppliedSetting,OwningProcess,$process | Format-Table *
+                Select-Object LocalAddress,LocalPort,RemoteAddress,RemotePort,State,AppliedSetting,OwningProcess,$process | Format-Table * -AutoSize
             }
             else {
                 Get-NetTCPConnection -LocalAddress $localip |
-                Select-Object LocalAddress,LocalPort,RemoteAddress,RemotePort,State,AppliedSetting,OwningProcess,$process | Format-Table *
+                Select-Object LocalAddress,LocalPort,RemoteAddress,RemotePort,State,AppliedSetting,OwningProcess,$process | Format-Table * -AutoSize
             }
         }
 
@@ -75,21 +79,46 @@ Function nc() {
                 $iplist = Get-NetTCPConnection -LocalAddress $localip
             }
             if ($Out) {
-                $iplist | ForEach-Object {
-                    $RemoteIpAddress = $_.RemoteAddress
-                    $ProcessId = $_.OwningProcess
-                    $Result = Invoke-RestMethod -Uri http://ip-api.com/json/$RemoteIpAddress
-                    $Result | Select-Object query, @{Name = 'OwningProcess';Expression={$ProcessId}}, @{Name='ProcessName';Expression={(Get-Process -Id $ProcessId).ProcessName}}, country, countryCode, region, regionName, city, zip, timezone, isp, org, as
-                } | Out-GridView -PassThru
+                if ($VirusTotal) {
+                    $iplist | ForEach-Object {
+                        $RemoteIpAddress = $_.RemoteAddress
+                        $ProcessId = $_.OwningProcess
+                        $IpResult = Invoke-RestMethod -Uri http://ip-api.com/json/$RemoteIpAddress
+                        $VirusTotalResult =  Invoke-WebRequest -Uri https://www.virustotal.com/api/v3/ip_addresses/$RemoteIpAddress/votes -Headers @{"x-apikey"="bfa906e9430715ee1eb285b7678b430c280e402c1f0728f367b3b7448bae6396"}
+                        $json = $VirusTotalResult | ConvertFrom-Json
+                        $Verdict = $json.data.attributes | Select-Object -First 1 | Select-Object -ExpandProperty verdict
+                        if ($json.meta.count -eq '0') {$Verdict = "Clean"}
+                        $IpResult | Select-Object query, @{Name = 'OwningProcess';Expression={$ProcessId}}, @{Name='ProcessName';Expression={(Get-Process -Id $ProcessId).ProcessName}}, @{Name = 'VirusTotalVerdict';Expression={$Verdict}},country, countryCode, region, regionName, city, zip, timezone, isp, org, as
+                    } | Out-GridView -PassThru
+                } else {
+                    $iplist | ForEach-Object {
+                        $RemoteIpAddress = $_.RemoteAddress
+                        $ProcessId = $_.OwningProcess
+                        $IpResult = Invoke-RestMethod -Uri http://ip-api.com/json/$RemoteIpAddress
+                        $IpResult | Select-Object query, @{Name = 'OwningProcess';Expression={$ProcessId}}, @{Name='ProcessName';Expression={(Get-Process -Id $ProcessId).ProcessName}},country, countryCode, region, regionName, city, zip, timezone, isp, org, as
+                    } | Out-GridView -PassThru
+                }
             }
             else {
-                $iplist | ForEach-Object {
-                    $RemoteIpAddress = $_.RemoteAddress
-                    $ProcessId = $_.OwningProcess
-                    $Result = Invoke-RestMethod -Uri http://ip-api.com/json/$RemoteIpAddress
-                    $Result | Select-Object query, @{Name = 'OwningProcess';Expression={$ProcessId}}, @{Name='ProcessName';Expression={(Get-Process -Id $ProcessId).ProcessName}}, country, countryCode, region, regionName, city, zip, timezone, isp, org, as
-                } | Format-Table *
-                
+                if ($VirusTotal) {
+                    $iplist | ForEach-Object {
+                        $RemoteIpAddress = $_.RemoteAddress
+                        $ProcessId = $_.OwningProcess
+                        $IpResult = Invoke-RestMethod -Uri http://ip-api.com/json/$RemoteIpAddress
+                        $VirusTotalResult =  Invoke-WebRequest -Uri https://www.virustotal.com/api/v3/ip_addresses/$RemoteIpAddress/votes -Headers @{"x-apikey"="<api-key>"}
+                        $json = $VirusTotalResult | ConvertFrom-Json
+                        $Verdict = $json.data.attributes | Select-Object -First 1 | Select-Object -ExpandProperty verdict
+                        if ($json.meta.count -eq '0') {$Verdict = "Clean"}
+                        $IpResult | Select-Object query, @{Name = 'OwningProcess';Expression={$ProcessId}}, @{Name='ProcessName';Expression={(Get-Process -Id $ProcessId).ProcessName}}, @{Name = 'VirusTotalVerdict';Expression={$Verdict}},country, countryCode, region, regionName, city, zip, timezone, isp, org, as
+                    } | Format-Table * -AutoSize 
+                } else {
+                    $iplist | ForEach-Object {
+                        $RemoteIpAddress = $_.RemoteAddress
+                        $ProcessId = $_.OwningProcess
+                        $IpResult = Invoke-RestMethod -Uri http://ip-api.com/json/$RemoteIpAddress
+                        $IpResult | Select-Object query, @{Name = 'OwningProcess';Expression={$ProcessId}}, @{Name='ProcessName';Expression={(Get-Process -Id $ProcessId).ProcessName}},country, countryCode, region, regionName, city, zip, timezone, isp, org, as
+                    } | Format-Table * -AutoSize 
+                }
             }
         }
 
