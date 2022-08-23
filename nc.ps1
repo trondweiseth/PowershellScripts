@@ -5,6 +5,7 @@ Function nc() {
 
     .DESCRIPTION
     This PS script for checking all active network connections.
+    PS! REMEMBER TO ADD YOUR VIRUSTOTAL API KEY
 
     .PARAMETER resolve
     Tries to resolve ip address by sending a json query to ip-api.com
@@ -42,7 +43,7 @@ Function nc() {
     )
 
     Begin {
-        $Global:VirusTotalAPIKey="<VirusTotal API Key>"
+        $Global:VirusTotalAPIKey="VIRUSTOTAL API KEY HERE"
         $nic = Get-NetAdapter | where { $_.Status -eq "Up" } | Select-Object -ExpandProperty Name
         $localip = Get-NetIPAddress -InterfaceAlias $nic -AddressFamily IPv4 | Select-Object -ExpandProperty IPAddress
         $process = @{
