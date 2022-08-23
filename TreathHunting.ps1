@@ -2,9 +2,10 @@ Function TreathHunting() {
 
     param
     (
-        [Parameter(Mandatory=$false,
+        [Parameter(Mandatory=$true,
                    ValueFromPipeline=$true,
-                   ValueFromPipelineByPropertyName=$true)]
+                   ValueFromPipelineByPropertyName=$true,
+                   Position=0)]
         [string[]]
         $Search,
 
@@ -48,18 +49,22 @@ Function TreathHunting() {
         }
 
         if ($Query -eq "Domain") {
-            if ($Engine -eq "VirusTotal") {
-                Invoke-Expression $VTdomain$object
-            } else {
-                Invoke-Expression $AVdomain$object
+            foreach ($object in $Search) {
+                if ($Engine -eq "VirusTotal") {
+                    Invoke-Expression $VTdomain$object
+                } else {
+                    Invoke-Expression $AVdomain$object
+                }
             }
         }
 
         if ($Query -eq "IP") {
-            if ($Engine -eq "VirusTotal") {
-                Invoke-Expression $VTip$object
-            } else {
-                Invoke-Expression $AVip$object
+            foreach ($object in $Search) {
+                if ($Engine -eq "VirusTotal") {
+                    Invoke-Expression $VTip$object
+                } else {
+                    Invoke-Expression $AVip$object
+                }
             }
         }
     }
