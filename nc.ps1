@@ -14,7 +14,7 @@ Function nc() {
     Sending output to Out-GridView
 
     .EXAMPLE
-    netconn [-out] [-resolve] [-getprocess] [-all]
+    nc [-out] [-Resolve] [-VirusTotal] [-Status <status>] [-Query <query>]
 
     .NOTES
     Author : Trond Weiseth
