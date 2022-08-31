@@ -30,13 +30,13 @@ Function TreathHunting() {
     }
     Process
     {
-
         if ($Query -eq "File") {
             $Hashlist = [System.Collections.ArrayList]@()
             foreach ($File in $object) {
                 $Hash = (Get-FileHash -Algorithm MD5 $File).Hash
                 [void]$Hashlist.Add($Hash)
             }
+            
             foreach ($object in $Hashlist) {
                 if ($Engine -eq "VirusTotal") {
                     Invoke-Expression $VTfile$object
@@ -45,7 +45,7 @@ Function TreathHunting() {
                 }
             }
         }
-
+        
         if ($Query -eq "Domain") {
             foreach ($object in $Search) {
                 if ($Engine -eq "VirusTotal") {
@@ -55,7 +55,7 @@ Function TreathHunting() {
                 }
             }
         }
-
+        
         if ($Query -eq "IP") {
             foreach ($object in $Search) {
                 if ($Engine -eq "VirusTotal") {
