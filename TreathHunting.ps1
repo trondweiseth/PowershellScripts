@@ -6,22 +6,20 @@ Function TreathHunting() {
                    ValueFromPipeline=$true,
                    ValueFromPipelineByPropertyName=$true,
                    Position=0)]
-        [string[]]
-        $Search,
+        [string[]]$Search,
 
         [Parameter(Mandatory=$true,
         ValueFromPipeline=$true)]
         [ValidateSet('File','Domain','IP')]
-        [string]
-        $Query,
+        [string]$Query,
 
         [Parameter(Mandatory=$true)]
         [ValidateSet('VirusTotal','AilienVault')]
-        [string]
-        $Engine
+        [string]$Engine
     )
 
-    Begin{
+    Begin
+    {
         $object   = $Search
         $VTfile   = "start https://www.virustotal.com/gui/file/"
         $VTdomain = "start https://www.virustotal.com/gui/domain/"
@@ -68,7 +66,8 @@ Function TreathHunting() {
             }
         }
     }
-    End{
+    End
+    {
         Clear-Variable object
         if ($?) {Write-Host -ForegroundColor Green "Successful."}
     }
