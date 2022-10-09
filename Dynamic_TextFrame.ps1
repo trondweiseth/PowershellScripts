@@ -13,7 +13,7 @@ Function Textframe {
     $Output -split '[\n\r]' | ? {$_.trim() -ne "" } | % {
         $StringLength = $_ | Measure-Object -Property Length -Sum | Select-Object -ExpandProperty Sum
         $Spacer = ($LongestLine - $StringLength)
-        "# " + $_ + " " * $Spacer + "#"
+        "| " + $_ + " " * $Spacer + "|"
     }
     $Closer
 }
