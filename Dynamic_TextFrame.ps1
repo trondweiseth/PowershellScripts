@@ -1,3 +1,4 @@
+# Some command outputs need to be piped to Out-String before using this script for correct format.
 Function Textframe {
     [CmdletBinding()]
     Param
