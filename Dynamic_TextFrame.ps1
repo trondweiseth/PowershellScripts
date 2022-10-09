@@ -3,17 +3,19 @@ Function Textframe {
     Param
     (
         [Parameter(ValueFromPipeline)]
-        $InputText
+        $InputText,
+        $Sidewalls = "|",
+        $Lines = "*"
     )
     
     $Output = $InputText | Out-String
     $LongestLine=(($Output -split '[\n]') | Measure-Object -Maximum -Property Length).Maximum
-    $Closer = ("#" * ($LongestLine + 3))
+    $Closer = ("${Lines}" * ($LongestLine + 3))
     $Closer
     $Output -split '[\n\r]' | ? {$_.trim() -ne "" } | % {
         $StringLength = $_ | Measure-Object -Property Length -Sum | Select-Object -ExpandProperty Sum
         $Spacer = ($LongestLine - $StringLength)
-        "| " + $_ + " " * $Spacer + "|"
+        "${Sidewalls} " + $_ + " " * $Spacer + "${Sidewalls}"
     }
     $Closer
 }
