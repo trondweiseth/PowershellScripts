@@ -18,7 +18,6 @@ Function Encrypt {
     $FullName = $item.FullName
 
     if ($Action -eq 'Encrypt') {
-        $text = Get-Content $File
         $encrypted = $Data | ConvertTo-SecureString -AsPlainText -Force
         $fromsecurestring = $encrypted | ConvertFrom-SecureString
         $fromsecurestring | Out-File $FullName
@@ -30,9 +29,8 @@ Function Encrypt {
     if ($Action -eq 'Decrypt') {
         $tosecurestring = Get-Content $FullName | ConvertTo-SecureString
         $tosecurestring | % {
-            $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($_)
-            $Marshal::PtrToStringAuto($Bstr)
-            } | Out-File $FullName
+            [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($_)) 
+            }| Out-File $FullName
             if (!$Silent) {
                 Write-Host -f Green "Decrypted file $FullName"
             }
