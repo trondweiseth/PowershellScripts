@@ -56,10 +56,15 @@ function Run-EncryptedScript {
     $FilePath = $item.Directory
     $FileName = $item.BaseName.Split('_')[0]
     $FullName = $item.FullName
-    echo $null > $FullName
+    if (Test-Path ${FilePath}${FileName}_encrypted.txt) {
+        echo "Encrypted script. Use Run-EncryptedScript $FullName" > $FullName
+    }
+    else {
+        Encrypt $FullName -Action Encrypt -Silent
+    }
     Encrypt ${FilePath}${FileName}_encrypted.txt -Action Decrypt -Silent
     cat ${FilePath}${FileName}_decrypted.txt > $FullName
     rm ${FilePath}${FileName}_decrypted.txt
     & $FullName
-    echo $null > $FullName
+    echo "Encrypted script. Use Run-EncryptedScript $FullName" > $FullName
 }
