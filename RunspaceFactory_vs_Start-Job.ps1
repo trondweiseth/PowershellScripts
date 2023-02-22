@@ -2,7 +2,7 @@ function stage() {
     $Global:Count = 1
     $Global:NIC = Get-NetAdapterStatistics | ? { $_.ReceivedBytes -ne 0} | select -ExpandProperty Name
     $Global:IP  = Get-NetIPAddress -InterfaceAlias $NIC -AddressFamily IPv4 | select -ExpandProperty IPAddress
-    $GlobalServers = Get-NetTCPConnection -State Established -LocalAddress $IP | select -ExpandProperty RemoteAddress
+    $Global:Servers = Get-NetTCPConnection -State Established -LocalAddress $IP | select -ExpandProperty RemoteAddress
 }
 
 #### Start-Job ####
