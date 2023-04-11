@@ -11,4 +11,3 @@ if($patchTime -ge $today) {
   $timeUntilPatch = New-TimeSpan -Start $today -End $patchTime
   return "Patch Tuesday has already passed this week. The next patch Tuesday is on $($patchTime.ToString("dddd dd. MMMM yyyy HH:mm")). Time until patch release: $($timeUntilPatch.Days) days, $($timeUntilPatch.Hours) hours, $($timeUntilPatch.Minutes) minutes, $($timeUntilPatch.Seconds) seconds."
 }
-
