@@ -1,3 +1,4 @@
+# Hazard logo
 [void]($sysinfocsv = systeminfo.exe /FO CSV)
 $sysinfo = $sysinfocsv | ConvertFrom-Csv | Select-Object 'host name','os name','os version','os configuration','registered owner','registered organization','system manufacturer','system model','system type','Processor(s)' | fl | Out-String
 
@@ -25,6 +26,23 @@ write-host -ForegroundColor Green @"
      .               _d#####^#####m__              ,              
       "*w_________am#####P"   ~9#####mw_________w*"                  
           ""9@#####@M""           ""P@#####@M""                    
+
+$sysinfo
+
+"@
+
+# Windows Logo
+[void]($sysinfocsv = systeminfo.exe /FO CSV)
+$sysinfo = $sysinfocsv | ConvertFrom-Csv | Select-Object 'host name','os name','os version','os configuration','registered owner','registered organization','system manufacturer','system model','system type','Processor(s)' | fl | Out-String
+
+write-host -ForegroundColor Green @"
+
+       _.-;;-._
+'-..-'|   ||   |
+'-..-'|_.-;;-._|
+'-..-'|   ||   |
+'-..-'|_.-''-._|
+          
 
 $sysinfo
 
